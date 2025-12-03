@@ -1,1 +1,26 @@
+name: Job Portal Automation
+
+on:
+  schedule:
+    - cron: '0 10 * * *' # Runs every day at 10 AM UTC
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  automate-job:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install Puppeteer
+        run: npm install puppeteer
+
+      - name: Run Automation Script
+        run: node automate.js
 

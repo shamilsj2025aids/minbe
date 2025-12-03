@@ -5,87 +5,130 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Placement Job Portal</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+        /* General Reset */
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f1f3f6;
+            color: #333;
         }
 
         header {
-            background-color: #007bff;
+            background: linear-gradient(90deg, #4e54c8, #8f94fb);
             color: white;
-            padding: 20px;
+            padding: 25px 20px;
             text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 2rem;
+            letter-spacing: 1px;
         }
 
         main {
-            max-width: 800px;
+            max-width: 900px;
             margin: 30px auto;
             padding: 0 20px;
         }
 
-        h2 {
-            color: #333;
-        }
-
         .job-form, .job-list {
             background-color: white;
-            padding: 20px;
+            padding: 25px;
             margin-bottom: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            color: #4e54c8;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        input, button {
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
         }
 
         input {
-            display: block;
-            width: 95%;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-            border: 1px solid #ccc;
+            width: 48%;
+            margin-bottom: 15px;
+            margin-right: 4%;
+        }
+
+        input:last-child {
+            margin-right: 0;
         }
 
         button {
-            padding: 10px 15px;
-            background-color: #007bff;
+            width: 100%;
+            background-color: #4e54c8;
             color: white;
             border: none;
-            border-radius: 5px;
             cursor: pointer;
+            transition: 0.3s;
         }
 
         button:hover {
-            background-color: #0056b3;
+            background-color: #3b3fc1;
         }
 
         ul {
             list-style: none;
-            padding: 0;
         }
 
         li {
-            background-color: #f9f9f9;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 5px;
+            background-color: #f8f9ff;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 5px solid #4e54c8;
+            border-radius: 8px;
             position: relative;
+            transition: 0.3s;
+        }
+
+        li:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         li button {
             position: absolute;
-            right: 15px;
-            top: 15px;
-            background-color: red;
+            top: 20px;
+            right: 20px;
+            width: auto;
+            padding: 5px 10px;
+            background-color: #ff4b5c;
+            border-radius: 5px;
         }
 
         li button:hover {
-            background-color: darkred;
+            background-color: #d9364f;
         }
 
-        .job-time {
-            font-size: 0.9em;
+        .job-time, .job-dates {
+            font-size: 0.9rem;
             color: gray;
+            display: block;
+            margin-top: 5px;
+        }
+
+        .dates {
+            margin-top: 8px;
+        }
+
+        @media(max-width: 600px) {
+            input {
+                width: 100%;
+                margin-right: 0;
+            }
         }
     </style>
 </head>
@@ -101,6 +144,8 @@
                 <input type="text" id="jobTitle" placeholder="Job Title" required>
                 <input type="text" id="companyName" placeholder="Company Name" required>
                 <input type="text" id="location" placeholder="Location" required>
+                <input type="date" id="startDate" required>
+                <input type="date" id="endDate" required>
                 <button type="submit">Add Job</button>
             </form>
         </section>
@@ -117,29 +162,63 @@
         const jobForm = document.getElementById('jobForm');
         const jobsList = document.getElementById('jobs');
 
+        // Preload some classic jobs
+        const initialJobs = [
+            {
+                title: "Software Engineer",
+                company: "TechCorp Ltd.",
+                location: "New York, USA",
+                startDate: "2025-12-01",
+                endDate: "2025-12-31"
+            },
+            {
+                title: "Data Analyst",
+                company: "DataSolutions",
+                location: "San Francisco, USA",
+                startDate: "2025-11-20",
+                endDate: "2025-12-20"
+            },
+            {
+                title: "UX Designer",
+                company: "DesignStudio",
+                location: "London, UK",
+                startDate: "2025-12-05",
+                endDate: "2026-01-05"
+            }
+        ];
+
+        function renderJob(job) {
+            const time = new Date().toLocaleString();
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <strong>${job.title}</strong> at ${job.company} (${job.location})
+                <span class="job-dates">Open: ${job.startDate} | Close: ${job.endDate}</span>
+                <span class="job-time">Posted: ${time}</span>
+                <button onclick="removeJob(this)">Remove</button>
+            `;
+            jobsList.appendChild(li);
+        }
+
+        initialJobs.forEach(renderJob);
+
         jobForm.addEventListener('submit', function(e) {
             e.preventDefault();
 
-            const title = document.getElementById('jobTitle').value;
-            const company = document.getElementById('companyName').value;
-            const location = document.getElementById('location').value;
-            const time = new Date().toLocaleString();
+            const job = {
+                title: document.getElementById('jobTitle').value,
+                company: document.getElementById('companyName').value,
+                location: document.getElementById('location').value,
+                startDate: document.getElementById('startDate').value,
+                endDate: document.getElementById('endDate').value
+            };
 
-            const li = document.createElement('li');
-            li.innerHTML = `
-                <strong>${title}</strong> at ${company} (${location})
-                <span class="job-time">${time}</span>
-                <button onclick="removeJob(this)">Remove</button>
-            `;
-
-            jobsList.appendChild(li);
+            renderJob(job);
 
             jobForm.reset();
         });
 
         function removeJob(button) {
-            const li = button.parentElement;
-            li.remove();
+            button.parentElement.remove();
         }
     </script>
 </body>

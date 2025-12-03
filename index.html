@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Placement Job Portal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        .job-form, .job-list {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        input {
+            display: block;
+            width: 95%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            background-color: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            position: relative;
+        }
+
+        li button {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            background-color: red;
+        }
+
+        li button:hover {
+            background-color: darkred;
+        }
+
+        .job-time {
+            font-size: 0.9em;
+            color: gray;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Placement Job Portal</h1>
+    </header>
+
+    <main>
+        <section class="job-form">
+            <h2>Add New Job</h2>
+            <form id="jobForm">
+                <input type="text" id="jobTitle" placeholder="Job Title" required>
+                <input type="text" id="companyName" placeholder="Company Name" required>
+                <input type="text" id="location" placeholder="Location" required>
+                <button type="submit">Add Job</button>
+            </form>
+        </section>
+
+        <section class="job-list">
+            <h2>Available Jobs</h2>
+            <ul id="jobs">
+                <!-- Jobs will appear here -->
+            </ul>
+        </section>
+    </main>
+
+    <script>
+        const jobForm = document.getElementById('jobForm');
+        const jobsList = document.getElementById('jobs');
+
+        jobForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const title = document.getElementById('jobTitle').value;
+            const company = document.getElementById('companyName').value;
+            const location = document.getElementById('location').value;
+            const time = new Date().toLocaleString();
+
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <strong>${title}</strong> at ${company} (${location})
+                <span class="job-time">${time}</span>
+                <button onclick="removeJob(this)">Remove</button>
+            `;
+
+            jobsList.appendChild(li);
+
+            jobForm.reset();
+        });
+
+        function removeJob(button) {
+            const li = button.parentElement;
+            li.remove();
+        }
+    </script>
+</body>
+</html>
